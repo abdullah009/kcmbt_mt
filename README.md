@@ -44,14 +44,14 @@ Parameters:
 	-i:	input file in fastq format (start with @ if the file contains a list of fastq files)
 	-t:	number of threads (please use 2^x threads, x = 0, , 2, 3, ..)
 ```
-Example: ```kcmbt -k 28 -i srr.fastq -t 4```
+Example: ```./bin/kcmbt -k 28 -i srr.fastq -t 4```
 
 To run kcmbt_dump, use
 
 ```
 ./bin/kcmbt_dump number_of_threads_used_in_kcmbt
 ```
-Example: ```./kcmbt_dump 4```
+Example: ```./bin/kcmbt_dump 4```
 
 _kcmbt\_dump_ creates kmer\_list.txt which contains human readable _k_-mer list with their counts. This file may be huge. So we can query a specific range of _k_-mer lists using _kcmbt\_query_.
 
