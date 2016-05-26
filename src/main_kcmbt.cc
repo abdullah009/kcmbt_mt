@@ -297,7 +297,7 @@ void ComputeKmer(int th_ind, int total_thread, vector<int>& file_ind_arr, vector
 	//cout << file_ind_arr.size() * total_thread << endl;
 
 	// file split	
-	char* s = (char*) malloc((1 << 10)* sizeof(char));
+	char* s = (char*) malloc((1 << 13)* sizeof(char));
 	char* seq = s;
 	for (int f = file_ind_arr.size() * total_thread; f < in_file_arr.size(); ++f) { // read each file and generate kmers
 		FastqReader fr;
