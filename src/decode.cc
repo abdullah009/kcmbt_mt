@@ -104,7 +104,7 @@ int main(int argc, char** argv) { // ./bin/kcmbt_dump #file
 		uint64_t big_kmer[2];
 		while (fread(big_kmer, sizeof(uint64_t), 2, big_file)) {
 			big_kmer_str += BinaryToKmer(big_kmer[0], kmer_len);
-			big_kmer_str += "\t" + to_string(big_kmer[1]);
+			big_kmer_str += "\t" + to_string(big_kmer[1]) + "\n";
 		}
 		out_file << big_kmer_str;
 		fclose(big_file);
