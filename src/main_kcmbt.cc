@@ -156,7 +156,7 @@ void ComputeKmer(int th_ind, int total_thread, vector<int>& file_ind_arr, vector
 	codes['T'] = codes['t'] = 3;
 	// ===
 
-	temp_mem[th_ind] = new uint64_t[(total_thread - 1) * kMaxBucketSize]; // temporary memory for sorting
+	temp_mem[th_ind] = new uint64_t[total_thread * kMaxBucketSize]; // temporary memory for sorting
 
 	uint64_t total_entry = kTotalLayer * total_tree;
 	uint64_t* buffer = new uint64_t[total_entry * kMaxBuff];// __attribute__((aligned(64))); // kmer buffers, while full, insert into trees
@@ -253,7 +253,7 @@ void ComputeKmer(int th_ind, int total_thread, vector<int>& file_ind_arr, vector
 								+ !cond1 * (prev_k_less * (((kmer << (l_shift_arr[c_layer] - 2)) & k_kmer_mask[c_layer]) | kInitCount) + !prev_k_less * ((kmer_rev << l_shift_arr[c_layer]) | kInitCount));
 						buffer[(c_layer * total_tree + tree_ind) * kMaxBuff + (pos_arr[c_layer * total_tree + tree_ind]++)] = kmer_bit;
 						all_count_arr[th_ind][tree_ind] += (c_layer == 0);
-						if (pos_arr[c_layer * total_tree + tree_ind] >= kMaxBuff) { // does not affect that much
+						if (pos_arr[c_layer * total_tree + tree_ind] >= kMaxBuff) { 
 							InsertBatch(root[th_ind][(c_layer * total_tree + tree_ind)], &buffer[(c_layer * total_tree + tree_ind) * kMaxBuff], pos_arr[c_layer * total_tree + tree_ind]);
 							kmer_count_arr[c_layer * total_tree + tree_ind] += pos_arr[c_layer * total_tree + tree_ind];
 							pos_arr[c_layer * total_tree + tree_ind] = 0;
@@ -280,7 +280,7 @@ void ComputeKmer(int th_ind, int total_thread, vector<int>& file_ind_arr, vector
 				tree_ind &= mask;
 				kmer_bit = b * ((kmer << l_shift_arr[c_layer]) | kInitCount) + !b * ((kmer_rev << l_shift_arr[c_layer]) | kInitCount);
 				buffer[(c_layer * total_tree + tree_ind) * kMaxBuff + (pos_arr[c_layer * total_tree + tree_ind]++)] = kmer_bit;
-				if (pos_arr[c_layer * total_tree + tree_ind] >= kMaxBuff) { // does not affect that much
+				if (pos_arr[c_layer * total_tree + tree_ind] >= kMaxBuff) { 
 					InsertBatch(root[th_ind][(c_layer * total_tree + tree_ind)], &buffer[(c_layer * total_tree + tree_ind) * kMaxBuff], pos_arr[c_layer * total_tree + tree_ind]);
 					kmer_count_arr[c_layer * total_tree + tree_ind] += pos_arr[c_layer * total_tree + tree_ind];
 					pos_arr[c_layer * total_tree + tree_ind] = 0;
@@ -361,7 +361,7 @@ void ComputeKmer(int th_ind, int total_thread, vector<int>& file_ind_arr, vector
 								+ !cond1 * (prev_k_less * (((kmer << (l_shift_arr[c_layer] - 2)) & k_kmer_mask[c_layer]) | kInitCount) + !prev_k_less * ((kmer_rev << l_shift_arr[c_layer]) | kInitCount));
 						buffer[(c_layer * total_tree + tree_ind) * kMaxBuff + (pos_arr[c_layer * total_tree + tree_ind]++)] = kmer_bit;
 						all_count_arr[th_ind][tree_ind] += (c_layer == 0);
-						if (pos_arr[c_layer * total_tree + tree_ind] >= kMaxBuff) { // does not affect that much
+						if (pos_arr[c_layer * total_tree + tree_ind] >= kMaxBuff) { 
 							InsertBatch(root[th_ind][(c_layer * total_tree + tree_ind)], &buffer[(c_layer * total_tree + tree_ind) * kMaxBuff], pos_arr[c_layer * total_tree + tree_ind]);
 							kmer_count_arr[c_layer * total_tree + tree_ind] += pos_arr[c_layer * total_tree + tree_ind];
 							pos_arr[c_layer * total_tree + tree_ind] = 0;
@@ -388,7 +388,7 @@ void ComputeKmer(int th_ind, int total_thread, vector<int>& file_ind_arr, vector
 				tree_ind &= mask;
 				kmer_bit = b * ((kmer << l_shift_arr[c_layer]) | kInitCount) + !b * ((kmer_rev << l_shift_arr[c_layer]) | kInitCount);
 				buffer[(c_layer * total_tree + tree_ind) * kMaxBuff + (pos_arr[c_layer * total_tree + tree_ind]++)] = kmer_bit;
-				if (pos_arr[c_layer * total_tree + tree_ind] >= kMaxBuff) { // does not affect that much
+				if (pos_arr[c_layer * total_tree + tree_ind] >= kMaxBuff) { 
 					InsertBatch(root[th_ind][(c_layer * total_tree + tree_ind)], &buffer[(c_layer * total_tree + tree_ind) * kMaxBuff], pos_arr[c_layer * total_tree + tree_ind]);
 					kmer_count_arr[c_layer * total_tree + tree_ind] += pos_arr[c_layer * total_tree + tree_ind];
 					pos_arr[c_layer * total_tree + tree_ind] = 0;
@@ -429,7 +429,7 @@ void ComputeKmer(int th_ind, int total_thread, vector<int>& file_ind_arr, vector
 		t_sum += (i + 1) * t_s;
 	}
 
-	max_len *= (total_thread * 2);
+	max_len *= (total_thread * 3);
 	if (max_len > 300 * 1024 * 1024)
 		max_len = 350 * 1024 * 1024;
 
@@ -437,7 +437,7 @@ void ComputeKmer(int th_ind, int total_thread, vector<int>& file_ind_arr, vector
 
 	struct rusage usage;
 	getrusage(RUSAGE_SELF, &usage);
-	//cout << th_ind << " fi: " << file_ind_arr.size() << "\tmem used: " << usage.ru_maxrss << "\t" << max_len << " count " << all_count[th_ind] << endl;
+	//cout << th_ind << " fi: " << file_ind_arr.size() << "\tmem used: " << kmer_count << "\t" << max_len << " count " << all_count[th_ind] << endl;
 
 
 
