@@ -43,9 +43,9 @@ int main(int argc, char** argv) { // ./bin/kcmbt_dump #file
 	int total_file = atoi(argv[1]);
 
 	ofstream out_file("kmer_list.txt");
-	for (int i = 0; i < total_file; ++i) {
+	for (int f = 0; f < total_file; ++f) {
 		// read prefix binary file
-		string pre_name("pre_out_" + to_string(i));
+		string pre_name("pre_out_" + to_string(f));
 		cout << pre_name << endl;
 		FILE* pre_file = fopen(pre_name.c_str() , "rb");
 
@@ -61,32 +61,38 @@ int main(int argc, char** argv) { // ./bin/kcmbt_dump #file
 		uint64_t count_mask = (1ULL << (64 - 2 * rem_kmer_len)) - 1;
 
 		//cout << total_tree << " " << tree_mask << " " << rem_kmer_len << " " << count_mask << endl;
+
 		vector<uint64_t> count_arr (total_tree);
-		vector<string> prefix_arr (total_tree);
 		fread(&count_arr[0], sizeof(uint64_t), total_tree, pre_file);
-		for (int i = 0; i < total_tree; ++i)
-			for (int j = 2 * tree_pow - 2; j >= 0; j -= 2)
-				prefix_arr[i] += kAlphabet[(i >> j) & 3];
 
 		fclose(pre_file);
 
 		cout << "done prefix" << endl;
 
 		// read suffix & count binary file
-		string suf_name("suf_out_" + to_string(i));
+		vector<string> prefix_arr (total_tree);
+		string suf_name("suf_out_" + to_string(f));
 		FILE* kmer_file = fopen(suf_name.c_str(), "rb");
 		uint64_t total_kmer = 0;
 		for (int i = 0; i < total_tree; ++i) {
 			if (count_arr[i] == 0)
 				continue;
-			total_kmer += count_arr[i];
-			//cout << i << ":\t" << count_arr[i] << "\t" << total_kmer << endl;
-			uint64_t* rem_kmer_arr = new uint64_t[count_arr[i]];
-			string* kmer_arr = new string[count_arr[i]];
+            uint64_t tree_ind = count_arr[i] >> 32;
+            uint64_t count = count_arr[i] & 0xFFFFFFFF;
+			total_kmer += count;
 
-			fread(rem_kmer_arr, sizeof(uint64_t), count_arr[i], kmer_file);
+			//cout << i << ":\t" << count << "\t" << total_kmer << " " << tree_ind << endl;
+
+			uint64_t* rem_kmer_arr = new uint64_t[count];
+			string* kmer_arr = new string[count];
+
+			uint64_t dread = fread(rem_kmer_arr, sizeof(uint64_t), count, kmer_file);
+            
+            for (int j = 2 * tree_pow - 2; j >= 0; j -= 2)
+                prefix_arr[i] += kAlphabet[(tree_ind >> j) & 3];
+
 			string out_str;
-			for (int j = 0; j < count_arr[i]; ++j)
+			for (int j = 0; j < count; ++j)
 				out_str += BinaryToKmerCount(prefix_arr[i], rem_kmer_arr[j], rem_kmer_len, count_mask) + "\n";
 			out_file << out_str;
 
@@ -98,7 +104,7 @@ int main(int argc, char** argv) { // ./bin/kcmbt_dump #file
 
 		cout << "done suffix" << endl;
 
-		string big_name("big_out_" + to_string(i));
+		string big_name("big_out_" + to_string(f));
 		FILE* big_file = fopen(big_name.c_str(), "rb");
 		string big_kmer_str;
 		uint64_t big_kmer[2];

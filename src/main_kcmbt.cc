@@ -59,7 +59,7 @@ void HowToUse() {
 	cout << "\n\n\n";
 }
 
-void SortKmer(int tree_ind, FILE* out_file, int th_ind, int total_thread) {
+void SortKmer(int tree_ind, int pre_ind, FILE* out_file, int th_ind, int total_thread) {
 	uint64_t kmer_uniq = 0;
 	uint64_t pos_arr[total_thread + 1];
 	pos_arr[0] = 0;
@@ -67,16 +67,16 @@ void SortKmer(int tree_ind, FILE* out_file, int th_ind, int total_thread) {
 		Traverse(root[i][tree_ind], 0, kmer_uniq, th_ind);
 		pos_arr[i + 1] = kmer_uniq;
 	}
-//	cout << th_ind << "\t" << kmer_uniq << " ";
+    //cout << th_ind << "\t" << kmer_uniq << " ";
 	int len = pos_arr[total_thread];
 	MergeKArr(pos_arr, th_ind, total_thread);
 	kmer_uniq = CompactKmer(&kmer_arr[th_ind][0], len, th_ind, tree_ind);
 	uniq_count[th_ind] += kmer_uniq;	
-	pre_arr[th_ind][tree_ind + 1] = kmer_uniq;
-//	cout << th_ind << ": " << tree_ind << "\t" << kmer_uniq <<endl;
-	uint64_t written = fwrite(&kmer_arr[th_ind][0], sizeof(uint64_t), kmer_uniq, out_file);
-//	if (th_ind == 1)
-//	cout << th_ind << " " << tree_ind << " " << kmer_uniq << " written " << written << endl;
+	pre_arr[th_ind][pre_ind] = (kmer_uniq | (uint64_t)tree_ind << 32);
+    
+	uint64_t written = fwrite(kmer_arr[th_ind], sizeof(uint64_t), kmer_uniq, out_file);
+    
+	//cout << th_ind << " " << tree_ind << " " << kmer_uniq << " written " << written << endl;
 }
 
 uint64_t ccc[32];
@@ -475,7 +475,7 @@ void TraverseKmer(int th_ind, int total_thread, vector<int>& order) {
 		cerr << "ERROR" << endl;
 	int tree_c = 0;	
 	for (int i = 0; i < order.size(); i++)
-		SortKmer(order[i], out_file, th_ind, total_thread);
+		SortKmer(order[i], i + 1, out_file, th_ind, total_thread);
 	fclose(out_file);
 
 	string pre ("pre_" + out_file_name + "_" + to_string(th_ind));
