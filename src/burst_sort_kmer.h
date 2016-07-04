@@ -141,7 +141,8 @@ static void Traverse(TrieNode* node, uint64_t depth, uint64_t& kmer_uniq, int th
 					if (node->sorted_pos_arr[i])
 						kmer_in_bucket = Merge(bucket, node->sorted_pos_arr[i], kmer_in_bucket, node->type);
 				}
-				move(&bucket[0], &bucket[kmer_in_bucket], &kmer_arr[th_ind][kmer_uniq]);
+                if (kmer_in_bucket > 0)
+    				move(&bucket[0], &bucket[kmer_in_bucket], &kmer_arr[th_ind][kmer_uniq]);
 				kmer_uniq += kmer_in_bucket;
 			}
 

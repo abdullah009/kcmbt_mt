@@ -67,16 +67,14 @@ void SortKmer(int tree_ind, int pre_ind, FILE* out_file, int th_ind, int total_t
 		Traverse(root[i][tree_ind], 0, kmer_uniq, th_ind);
 		pos_arr[i + 1] = kmer_uniq;
 	}
-    //cout << th_ind << "\t" << kmer_uniq << " ";
-	int len = pos_arr[total_thread];
-	MergeKArr(pos_arr, th_ind, total_thread);
-	kmer_uniq = CompactKmer(&kmer_arr[th_ind][0], len, th_ind, tree_ind);
+    sort(kmer_arr[th_ind], kmer_arr[th_ind] + kmer_uniq);
+	//MergeKArr(pos_arr, th_ind, total_thread); // TODO fix bug & remove above sort
+	kmer_uniq = CompactKmer(&kmer_arr[th_ind][0], kmer_uniq, th_ind, tree_ind);
 	uniq_count[th_ind] += kmer_uniq;	
 	pre_arr[th_ind][pre_ind] = (kmer_uniq | (uint64_t)tree_ind << 32);
     
 	uint64_t written = fwrite(kmer_arr[th_ind], sizeof(uint64_t), kmer_uniq, out_file);
-    
-	//cout << th_ind << " " << tree_ind << " " << kmer_uniq << " written " << written << endl;
+    //cout << uniq_count[th_ind] << " " << tree_ind << " " << kmer_uniq << " written " << written << endl;
 }
 
 uint64_t ccc[32];
@@ -432,6 +430,8 @@ void ComputeKmer(int th_ind, int total_thread, vector<int>& file_ind_arr, vector
 	max_len *= (total_thread * 3);
 	if (max_len > 300 * 1024 * 1024)
 		max_len = 350 * 1024 * 1024;
+    if (max_len < 1000)
+        max_len = 1000;
 
 	kmer_arr[th_ind] = new uint64_t[max_len];
 
@@ -674,7 +674,7 @@ int main(int argc, char** argv) {
 	std::cout << "unique kmer: " << total_uniq_count << "\ttotal kmer: " << total_kmer_count << "\n";
 	std::cout << "insertion time: wall " << double(std::chrono::duration_cast<std::chrono::milliseconds>(tp3-tp1).count()) / 1000 << "\tcpu " << (cput3 - cput1) / (double)CLOCKS_PER_SEC << "\n";
 //	std::cout << "2nd phase time: wall " << double(std::chrono::duration_cast<std::chrono::milliseconds>(tp3-tp2).count()) / 1000 << "\tcpu " << (cput3 - cput2) / (double)CLOCKS_PER_SEC << "\n";
-	std::cout << "3rd phase time: wall " << double(std::chrono::duration_cast<std::chrono::milliseconds>(tp4-tp3).count()) / 1000 << "\tcpu " << (cput4 - cput3) / (double)CLOCKS_PER_SEC << "\n";
+	std::cout << "traversal time: wall " << double(std::chrono::duration_cast<std::chrono::milliseconds>(tp4-tp3).count()) / 1000 << "\tcpu " << (cput4 - cput3) / (double)CLOCKS_PER_SEC << "\n";
 	std::cout << "total time: wall " << double(std::chrono::duration_cast<std::chrono::milliseconds>(tp4-tp1).count()) / 1000 << "\tcpu " << (cput4 - cput1) / (double)CLOCKS_PER_SEC << "\n";
 
 #ifdef DEBUG

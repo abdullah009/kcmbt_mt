@@ -257,6 +257,9 @@ uint64_t CompactKmer(uint64_t* bucket, uint64_t len, int th_ind, uint64_t tree_i
 	uint64_t* result = out;
 
 	uint64_t* first1 = &bucket[0], *last1 = &bucket[len];
+    if (first1 == last1)
+        return 0;
+
 	uint64_t* temp1 = first1;
 	++first1;
 	while (first1 != last1) {
