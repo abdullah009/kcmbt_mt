@@ -1,5 +1,3 @@
-
-
 #ifndef COMMON_H_
 #define COMMON_H_
 
@@ -16,7 +14,7 @@ struct BigKmer {
 
 vector<vector<BigKmer>> bkmer_arr;
 
-const uint64_t tree_pow = 5;
+const uint64_t tree_pow = 6;
 const uint64_t total_tree = pow(4, tree_pow);
 const uint64_t kTotalLayer = 4;
 

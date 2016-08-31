@@ -154,7 +154,7 @@ void ComputeKmer(int th_ind, int total_thread, vector<int>& file_ind_arr, vector
 	codes['T'] = codes['t'] = 3;
 	// ===
 
-	temp_mem[th_ind] = new uint64_t[total_thread * kMaxBucketSize]; // temporary memory for sorting
+	temp_mem[th_ind] = new uint64_t[(total_thread + 1) * kMaxBucketSize]; // temporary memory for sorting
 
 	uint64_t total_entry = kTotalLayer * total_tree;
 	uint64_t* buffer = new uint64_t[total_entry * kMaxBuff];// __attribute__((aligned(64))); // kmer buffers, while full, insert into trees

@@ -59,6 +59,8 @@ struct TrieNode {
 				size_arr[ch] = pos_arr[ch] * 1.5;
 				if (size_arr[ch] < kMinBucketSize)
 					size_arr[ch] = kMinBucketSize;
+				if (size_arr[ch] > kMaxBucketSize)
+					size_arr[ch] = kMaxBucketSize;
 				bucket_arr[ch] = (uint64_t *) malloc(size_arr[ch] * sizeof(uint64_t));//new uint64_t[size_arr[ch]];
 				move(&bucket[s], &bucket[i], &bucket_arr[ch][0]);
 				s = i;
@@ -69,6 +71,8 @@ struct TrieNode {
 		size_arr[ch] = pos_arr[ch] * 1.5;
 		if (size_arr[ch] < kMinBucketSize)
 			size_arr[ch] = kMinBucketSize;
+		if (size_arr[ch] > kMaxBucketSize)
+			size_arr[ch] = kMaxBucketSize;
 		bucket_arr[ch] = (uint64_t *) malloc(size_arr[ch] * sizeof(uint64_t));//new uint64_t[size_arr[ch]];
 		move(&bucket[s], &bucket[i], &bucket_arr[ch][0]);
 		s = i;
@@ -87,7 +91,6 @@ struct TrieNode {
 
 uint64_t tkc2 = 0, tkc4 =  0, tkc5 = 0;
 void InsertBatch(TrieNode* root, uint64_t* l_kmer_arr, uint64_t kmer_total) {
-
 	for (uint64_t i = 0; i < kmer_total; ++i) {
 		uint64_t kmer = l_kmer_arr[i];
 		uint64_t depth = 0;
